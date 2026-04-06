@@ -364,9 +364,8 @@ img { max-width: 100%; display: block; }
 .section-label { font-family: var(--font-heading); font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--celeste); margin-bottom: 12px; }
 
 .home-next-match { margin-top: 24px; }
-.next-match-content { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
-.next-match-team { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; flex: 1; min-width: 0; }
-.next-match-team:last-of-type { justify-content: flex-end; text-align: right; }
+.next-match-content { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.next-match-team { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; }
 .next-match-info { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .next-match-vs { font-family: var(--font-heading); font-size: 16px; color: var(--text-muted); text-transform: uppercase; }
 .next-match-date { font-size: 12px; color: var(--text-secondary); }
