@@ -443,8 +443,10 @@ img { max-width: 100%; display: block; }
 .group-table td.team-col { text-align: left; display: flex; align-items: center; gap: 8px; }
 .group-table td.points { font-weight: 700; color: var(--sol); }
 .team-flag { font-size: 18px; }
-.team-flag-img { display: inline-block; vertical-align: middle; border-radius: 2px; object-fit: cover; margin-right: 6px; flex-shrink: 0; }
+.team-flag-img { display: block; border-radius: 2px; object-fit: cover; flex-shrink: 0; }
 .team-name { font-size: 13px; }
+.team-link { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+.team-link:hover { color: var(--celeste-light); }
 .qualified td:first-child { border-left: 3px solid var(--win-green); }
 .third-place td:first-child { border-left: 3px solid var(--sol-dark); }
 
@@ -520,6 +522,7 @@ img { max-width: 100%; display: block; }
 
 .prediction-match-teams { display: flex; align-items: center; gap: 8px; }
 .prediction-team { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.prediction-team .team-flag-img { margin-right: 0; }
 .prediction-team .team-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .prediction-team.away { justify-content: flex-end; text-align: right; }
 .prediction-team.away .team-name { direction: rtl; }
@@ -1073,8 +1076,6 @@ img { max-width: 100%; display: block; }
 /* ==========================================
    Team Link
    ========================================== */
-.team-link { color: inherit; text-decoration: none; }
-.team-link:hover { color: var(--celeste-light); }
 
 /* ==========================================
    Team Detail
