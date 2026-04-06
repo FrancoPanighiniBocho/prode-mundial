@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useFirebaseValue } from '../hooks/useFirebase';
 import { useTournamentValue } from '../hooks/useTournamentValue';
 import { useAuth } from '../hooks/useAuth';
@@ -54,8 +54,17 @@ export default function MatchDetail() {
         <div className="match-detail-date">{formatDateTimeART(match.datetime)}</div>
         <div className="match-detail-teams">
           <div className="match-detail-team">
-            <TeamFlag team={homeTeam} size="lg" />
-            <span className="team-name-lg">{homeTeam?.name || match.home_placeholder || 'TBD'}</span>
+            {match.home_team ? (
+              <Link to={`/teams/${match.home_team}`} className="team-link">
+                <TeamFlag team={homeTeam} size="lg" />
+                <span className="team-name-lg">{homeTeam?.name || match.home_placeholder || 'TBD'}</span>
+              </Link>
+            ) : (
+              <>
+                <TeamFlag team={homeTeam} size="lg" />
+                <span className="team-name-lg">{match.home_placeholder || 'TBD'}</span>
+              </>
+            )}
           </div>
           {match.status === 'finished' && match.result ? (
             <div className="match-detail-score">
@@ -69,8 +78,17 @@ export default function MatchDetail() {
             <div className="match-detail-vs">{t('match.vs')}</div>
           )}
           <div className="match-detail-team">
-            <TeamFlag team={awayTeam} size="lg" />
-            <span className="team-name-lg">{awayTeam?.name || match.away_placeholder || 'TBD'}</span>
+            {match.away_team ? (
+              <Link to={`/teams/${match.away_team}`} className="team-link">
+                <TeamFlag team={awayTeam} size="lg" />
+                <span className="team-name-lg">{awayTeam?.name || match.away_placeholder || 'TBD'}</span>
+              </Link>
+            ) : (
+              <>
+                <TeamFlag team={awayTeam} size="lg" />
+                <span className="team-name-lg">{match.away_placeholder || 'TBD'}</span>
+              </>
+            )}
           </div>
         </div>
         <div className={`match-status-badge ${match.status}`}>

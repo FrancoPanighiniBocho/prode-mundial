@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useFirebaseValue } from '../hooks/useFirebase';
 import { useI18n } from '../i18n/useI18n';
 import { computeGroupStandings } from '../utils/groupStandings';
@@ -42,8 +43,10 @@ export default function Groups() {
                     return (
                       <tr key={row.team_code} className={idx < 2 ? 'qualified' : idx === 2 ? 'third-place' : ''}>
                         <td className="team-col">
-                          <TeamFlag team={team} />
-                          <span className="team-name">{team?.name || row.team_code}</span>
+                          <Link to={`/teams/${row.team_code}`} className="team-link">
+                            <TeamFlag team={team} />
+                            <span className="team-name">{team?.name || row.team_code}</span>
+                          </Link>
                         </td>
                         <td>{row.played}</td>
                         <td>{row.won}</td>

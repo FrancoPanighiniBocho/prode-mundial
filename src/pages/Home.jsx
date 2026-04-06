@@ -123,16 +123,28 @@ export default function Home() {
           <h3 className="section-label">{t('home.nextMatch')}</h3>
           <div className="next-match-content">
             <div className="next-match-team">
-              <TeamFlag team={nextHome} size="md" />
-              <span>{nextHome?.name || nextM.home_placeholder || 'TBD'}</span>
+              {nextM.home_team ? (
+                <Link to={`/teams/${nextM.home_team}`} className="team-link">
+                  <TeamFlag team={nextHome} size="md" />
+                  <span>{nextHome?.name || 'TBD'}</span>
+                </Link>
+              ) : (
+                <><TeamFlag team={nextHome} size="md" /><span>{nextM.home_placeholder || 'TBD'}</span></>
+              )}
             </div>
             <div className="next-match-info">
               <span className="next-match-vs">{t('match.vs')}</span>
               <span className="next-match-date">{formatDateTimeART(nextM.datetime)}</span>
             </div>
             <div className="next-match-team">
-              <TeamFlag team={nextAway} size="md" />
-              <span>{nextAway?.name || nextM.away_placeholder || 'TBD'}</span>
+              {nextM.away_team ? (
+                <Link to={`/teams/${nextM.away_team}`} className="team-link">
+                  <TeamFlag team={nextAway} size="md" />
+                  <span>{nextAway?.name || 'TBD'}</span>
+                </Link>
+              ) : (
+                <><TeamFlag team={nextAway} size="md" /><span>{nextM.away_placeholder || 'TBD'}</span></>
+              )}
             </div>
           </div>
         </Card>
@@ -173,9 +185,25 @@ export default function Home() {
             const a = teams?.[m.away_team];
             return (
               <Link to={`/matches/${id}`} key={id} className="home-result-row">
-                <span className="home-result-team"><TeamFlag team={h} /> {h?.name || 'TBD'}</span>
+                <span className="home-result-team">
+                  {m.home_team ? (
+                    <Link to={`/teams/${m.home_team}`} className="team-link" onClick={(e) => e.stopPropagation()}>
+                      <TeamFlag team={h} /> {h?.name || 'TBD'}
+                    </Link>
+                  ) : (
+                    <><TeamFlag team={h} /> {'TBD'}</>
+                  )}
+                </span>
                 <span className="home-result-score">{m.result?.home_score} - {m.result?.away_score}</span>
-                <span className="home-result-team"><TeamFlag team={a} /> {a?.name || 'TBD'}</span>
+                <span className="home-result-team">
+                  {m.away_team ? (
+                    <Link to={`/teams/${m.away_team}`} className="team-link" onClick={(e) => e.stopPropagation()}>
+                      <TeamFlag team={a} /> {a?.name || 'TBD'}
+                    </Link>
+                  ) : (
+                    <><TeamFlag team={a} /> {'TBD'}</>
+                  )}
+                </span>
               </Link>
             );
           })}

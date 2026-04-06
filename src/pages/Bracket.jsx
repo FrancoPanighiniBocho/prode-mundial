@@ -47,13 +47,25 @@ export default function Bracket() {
                       <div className="bracket-date">{formatDateART(match.datetime)}</div>
                       <div className="bracket-teams">
                         <div className="bracket-team">
-                          <TeamFlag team={homeTeam} />
-                          <span>{homeTeam?.name || match.home_placeholder || 'TBD'}</span>
+                          {match.home_team ? (
+                            <Link to={`/teams/${match.home_team}`} className="team-link" onClick={(e) => e.stopPropagation()}>
+                              <TeamFlag team={homeTeam} />
+                              <span>{homeTeam?.name || 'TBD'}</span>
+                            </Link>
+                          ) : (
+                            <><TeamFlag team={homeTeam} /><span>{match.home_placeholder || 'TBD'}</span></>
+                          )}
                           {match.status === 'finished' && <span className="bracket-score">{match.result?.home_score}</span>}
                         </div>
                         <div className="bracket-team">
-                          <TeamFlag team={awayTeam} />
-                          <span>{awayTeam?.name || match.away_placeholder || 'TBD'}</span>
+                          {match.away_team ? (
+                            <Link to={`/teams/${match.away_team}`} className="team-link" onClick={(e) => e.stopPropagation()}>
+                              <TeamFlag team={awayTeam} />
+                              <span>{awayTeam?.name || 'TBD'}</span>
+                            </Link>
+                          ) : (
+                            <><TeamFlag team={awayTeam} /><span>{match.away_placeholder || 'TBD'}</span></>
+                          )}
                           {match.status === 'finished' && <span className="bracket-score">{match.result?.away_score}</span>}
                         </div>
                       </div>

@@ -13,6 +13,7 @@ import MatchDetail from './pages/MatchDetail';
 import MyPredictions from './pages/MyPredictions';
 import InitialPredictions from './pages/InitialPredictions';
 import PlayerStats from './pages/PlayerStats';
+import TeamDetail from './pages/TeamDetail';
 import NotFound from './pages/NotFound';
 
 import AdminPanel from './pages/admin/AdminPanel';
@@ -38,6 +39,7 @@ export default function App() {
               <Route path="/bracket" element={<Bracket />} />
               <Route path="/matches/:matchId" element={<MatchDetail />} />
               <Route path="/players/:userId" element={<PlayerStats />} />
+              <Route path="/teams/:teamCode" element={<TeamDetail />} />
 
               {/* Participant-only */}
               <Route path="/predictions" element={

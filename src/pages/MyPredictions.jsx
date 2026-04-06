@@ -182,8 +182,14 @@ export default function MyPredictions() {
                 </div>
                 <div className="prediction-match-teams">
                   <div className="prediction-team home">
-                    <TeamFlag team={homeTeam} />
-                    <span className="team-name">{homeTeam?.name || match.home_placeholder || 'TBD'}</span>
+                    {match.home_team ? (
+                      <Link to={`/teams/${match.home_team}`} className="team-link">
+                        <TeamFlag team={homeTeam} />
+                        <span className="team-name">{homeTeam?.name || 'TBD'}</span>
+                      </Link>
+                    ) : (
+                      <><TeamFlag team={homeTeam} /><span className="team-name">{match.home_placeholder || 'TBD'}</span></>
+                    )}
                   </div>
                   <div className="prediction-inputs">
                     <input
@@ -207,8 +213,14 @@ export default function MyPredictions() {
                     />
                   </div>
                   <div className="prediction-team away">
-                    <TeamFlag team={awayTeam} />
-                    <span className="team-name">{awayTeam?.name || match.away_placeholder || 'TBD'}</span>
+                    {match.away_team ? (
+                      <Link to={`/teams/${match.away_team}`} className="team-link">
+                        <TeamFlag team={awayTeam} />
+                        <span className="team-name">{awayTeam?.name || 'TBD'}</span>
+                      </Link>
+                    ) : (
+                      <><TeamFlag team={awayTeam} /><span className="team-name">{match.away_placeholder || 'TBD'}</span></>
+                    )}
                   </div>
                 </div>
                 <div className="prediction-match-actions">
