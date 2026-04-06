@@ -5,12 +5,12 @@ export default function AdminPanel() {
   const { t } = useI18n();
 
   const links = [
-    { to: '/admin/results', label: t('admin.results') },
-    { to: '/admin/users', label: t('admin.users') },
-    { to: '/admin/knockout', label: t('admin.knockout') },
-    { to: '/admin/seed', label: t('admin.seed') },
-    { to: '/admin/missing', label: t('admin.missing') },
     { to: '/admin/tournaments', label: t('admin.tournaments') },
+    { to: '/admin/users', label: t('admin.users') },
+    { to: '/admin/results', label: t('admin.results') },
+    { to: '/admin/knockout', label: t('admin.knockout') },
+    { to: '/admin/missing', label: t('admin.missing') },
+    { to: '/admin/seed', label: t('admin.seed') },
   ];
 
   return (

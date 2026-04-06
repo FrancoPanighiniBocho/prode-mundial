@@ -118,6 +118,7 @@ export const translations = {
       createTournament: 'Create Tournament',
       tournamentName: 'Tournament Name',
       noTournaments: 'No tournaments yet',
+      selectTournament: 'Select tournament',
     },
     auth: {
       loginTitle: 'Login',
@@ -127,6 +128,8 @@ export const translations = {
       loggingIn: 'Logging in...',
       loginRequired: 'Login Required',
       loginRequiredMsg: 'You need to log in to access this section.',
+      selectTournament: 'Select Tournament',
+      multipleTournaments: 'You belong to multiple tournaments. Select one:',
     },
     playerStats: {
       title: 'Player Stats',
@@ -267,6 +270,7 @@ export const translations = {
       createTournament: 'Crear Torneo',
       tournamentName: 'Nombre del Torneo',
       noTournaments: 'No hay torneos aún',
+      selectTournament: 'Seleccionar torneo',
     },
     auth: {
       loginTitle: 'Ingresar',
@@ -276,6 +280,8 @@ export const translations = {
       loggingIn: 'Ingresando...',
       loginRequired: 'Ingreso Requerido',
       loginRequiredMsg: 'Necesitás iniciar sesión para acceder a esta sección.',
+      selectTournament: 'Seleccionar Torneo',
+      multipleTournaments: 'Pertenecés a varios torneos. Seleccioná uno:',
     },
     playerStats: {
       title: 'Estadísticas',
