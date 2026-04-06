@@ -14,12 +14,17 @@ export function computeMatchPoints(prediction, result) {
     return { points: 0, pleno: false, correctOutcome: false };
   }
 
-  const predHome = prediction.home_score;
-  const predAway = prediction.away_score;
+  const predHome = Number(prediction.home_score);
+  const predAway = Number(prediction.away_score);
 
   // For penalties, the result is treated as a draw (pre-penalty score)
-  const realHome = result.home_score;
-  const realAway = result.away_score;
+  const realHome = Number(result.home_score);
+  const realAway = Number(result.away_score);
+
+  // Guard against NaN from invalid data
+  if (isNaN(predHome) || isNaN(predAway) || isNaN(realHome) || isNaN(realAway)) {
+    return { points: 0, pleno: false, correctOutcome: false };
+  }
   const isPenalties = result.penalties === true;
 
   // Exact score match (pleno)

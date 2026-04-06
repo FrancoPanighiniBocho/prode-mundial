@@ -32,7 +32,7 @@ export function computeBadges(allPredictions, matches, users) {
   // Get finished matches sorted by datetime
   const finishedMatches = Object.entries(matches)
     .filter(([, m]) => m.status === 'finished' && m.result)
-    .sort(([, a], [, b]) => (a.datetime || 0) - (b.datetime || 0));
+    .sort(([, a], [, b]) => (a.datetime || 0) - (b.datetime || 0) || (a.match_number || 0) - (b.match_number || 0));
 
   if (finishedMatches.length === 0) return {};
 

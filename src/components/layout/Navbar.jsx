@@ -18,11 +18,12 @@ export default function Navbar({ onLoginClick, onAdminClick }) {
     clearTournament();
   };
 
-  // Build list of tournaments this user belongs to (for the dropdown)
-  // We can't easily check without reading each tournament's users,
-  // so we show allTournaments for logged-in users and let them switch
+  // Filter tournament dropdown to only tournaments the user belongs to
+  const userTournamentIds = user?.userTournamentIds || (isAdmin ? null : []);
   const tournamentOptions = allTournaments
-    ? Object.entries(allTournaments).map(([id, meta]) => ({ id, name: meta.name || id }))
+    ? Object.entries(allTournaments)
+        .filter(([id]) => !userTournamentIds || userTournamentIds.includes(id))
+        .map(([id, meta]) => ({ id, name: meta.name || id }))
     : [];
 
   const publicLinks = [

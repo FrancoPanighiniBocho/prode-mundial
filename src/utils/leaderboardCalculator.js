@@ -15,6 +15,7 @@ function goleadorMatch(predicted, actual) {
   if (!predicted || !actual) return false;
   const p = normalize(predicted);
   const a = normalize(actual);
+  if (p.length < 3 || a.length < 3) return p === a;
   return p === a || a.includes(p) || p.includes(a);
 }
 

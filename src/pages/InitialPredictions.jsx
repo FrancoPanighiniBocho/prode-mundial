@@ -14,7 +14,7 @@ import TeamFlag from '../components/ui/TeamFlag';
 import Modal from '../components/ui/Modal';
 
 export default function InitialPredictions() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { t } = useI18n();
   const { tournamentId } = useTournament();
   const navigate = useNavigate();
@@ -140,6 +140,8 @@ export default function InitialPredictions() {
         has_completed_initial_predictions: true,
         completed_initial_predictions_at: Date.now(),
       });
+      // Update auth state so MyPredictions doesn't redirect back
+      updateUser({ has_completed_initial_predictions: true });
       navigate('/predictions');
     } catch (err) {
       setError(err.message);

@@ -59,15 +59,18 @@ export function formatDateTimeART(timestamp) {
 }
 
 /**
- * Check if a team has been eliminated from the knockout stage.
- * A team is eliminated if they lost a knockout match (not the advancing team).
+ * Check if a team has been eliminated from the tournament.
+ * Eliminated if: lost a knockout match, OR not in any R32 match after all groups finished.
  */
 export function isTeamEliminated(teamCode, matches) {
   if (!teamCode || !matches) return false;
-  for (const match of Object.values(matches)) {
+
+  const matchList = Object.values(matches);
+
+  // Check knockout elimination (lost a knockout match)
+  for (const match of matchList) {
     if (match.stage === 'group' || match.status !== 'finished' || !match.result) continue;
     if (match.home_team !== teamCode && match.away_team !== teamCode) continue;
-    // Determine winner
     const { result } = match;
     let winner;
     if (result.penalties && result.advancing_team) {
@@ -81,6 +84,16 @@ export function isTeamEliminated(teamCode, matches) {
     }
     if (winner && winner !== teamCode) return true;
   }
+
+  // Check group-stage elimination: all groups finished but team not in any R32 match
+  const groupMatches = matchList.filter((m) => m.stage === 'group');
+  const allGroupsDone = groupMatches.length === 72 && groupMatches.every((m) => m.status === 'finished');
+  if (allGroupsDone) {
+    const r32Matches = matchList.filter((m) => m.stage === 'r32');
+    const inR32 = r32Matches.some((m) => m.home_team === teamCode || m.away_team === teamCode);
+    if (!inR32) return true;
+  }
+
   return false;
 }
 

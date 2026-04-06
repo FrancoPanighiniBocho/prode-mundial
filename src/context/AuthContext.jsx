@@ -71,6 +71,7 @@ export function AuthProvider({ children }) {
       role: 'participant',
       user: first.user,
       isAdmin: first.user.is_admin || false,
+      userTournamentIds: matchingTournaments.map((t) => t.tournamentId),
     };
     setAuth(newAuth);
 
@@ -93,13 +94,20 @@ export function AuthProvider({ children }) {
     }));
   }, []);
 
+  const updateUser = useCallback((updates) => {
+    setAuth((prev) => ({
+      ...prev,
+      user: prev.user ? { ...prev.user, ...updates } : prev.user,
+    }));
+  }, []);
+
   const logout = useCallback(() => {
     setAuth({ role: 'spectator', user: null, isAdmin: false });
     sessionStorage.removeItem(SESSION_KEY);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...auth, loginAsParticipant, loginAsAdmin, logout }}>
+    <AuthContext.Provider value={{ ...auth, loginAsParticipant, loginAsAdmin, updateUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

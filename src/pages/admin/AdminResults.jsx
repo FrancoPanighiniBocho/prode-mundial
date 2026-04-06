@@ -14,9 +14,6 @@ import TabBar from '../../components/ui/TabBar';
 export default function AdminResults() {
   const { value: matches, loading: mLoad } = useFirebaseValue('matches');
   const { value: teams, loading: tLoad } = useFirebaseValue('teams');
-  const { value: users, loading: uLoad } = useFirebaseValue('users');
-  const { value: allPredictions, loading: pLoad } = useFirebaseValue('predictions');
-  const { value: specialPredictions, loading: spLoad } = useFirebaseValue('special_predictions');
   const { value: config, loading: cfLoad } = useFirebaseValue('config');
   const { t } = useI18n();
   const [filter, setFilter] = useState('upcoming');
@@ -24,7 +21,7 @@ export default function AdminResults() {
   const [error, setError] = useState(null);
   const [scores, setScores] = useState({});
 
-  if (mLoad || tLoad || uLoad || pLoad || spLoad || cfLoad) return <LoadingSpinner />;
+  if (mLoad || tLoad || cfLoad) return <LoadingSpinner />;
 
   const tabs = [
     { key: 'upcoming', label: 'Upcoming' },
