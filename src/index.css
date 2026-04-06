@@ -340,8 +340,8 @@ img { max-width: 100%; display: block; }
    Home Page
    ========================================== */
 .hero { text-align: center; padding: 48px 0 32px; }
-.hero-title { font-family: var(--font-heading); font-size: 36px; font-weight: 700; text-transform: uppercase; letter-spacing: 4px; color: var(--celeste); margin-bottom: 8px; }
-.hero-subtitle { font-family: var(--font-heading); font-size: 18px; text-transform: uppercase; letter-spacing: 6px; color: var(--text-secondary); margin-bottom: 24px; }
+.hero-title { font-family: var(--font-heading); font-size: 28px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--celeste); margin-bottom: 6px; }
+.hero-subtitle { font-family: var(--font-heading); font-size: 13px; text-transform: uppercase; letter-spacing: 4px; color: var(--text-secondary); margin-bottom: 24px; }
 .hero-phase { display: inline-flex; flex-direction: column; gap: 4px; background: var(--bg-secondary); border: var(--border-accent); border-radius: var(--radius); padding: 12px 24px; }
 .phase-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); }
 .phase-value { font-family: var(--font-heading); font-size: 18px; color: var(--celeste); text-transform: uppercase; }
