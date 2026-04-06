@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { set, remove } from 'firebase/database';
-import { useFirebaseValue } from '../../hooks/useFirebase';
+import { useTournamentValue } from '../../hooks/useTournamentValue';
 import { useI18n } from '../../i18n/useI18n';
-import { prodeRef } from '../../config/firebase';
+import { tournamentRef } from '../../config/firebase';
+import { useTournament } from '../../context/TournamentContext';
 import { sha256 } from '../../utils/hash';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 export default function AdminUsers() {
-  const { value: users, loading } = useFirebaseValue('users');
+  const { tournamentId, allTournaments, setTournamentId } = useTournament();
+  const { value: users, loading } = useTournamentValue('users');
   const { t } = useI18n();
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -28,7 +30,7 @@ export default function AdminUsers() {
     try {
       const userId = `user_${username.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
       const pinHash = await sha256(pin);
-      await set(prodeRef(`users/${userId}`), {
+      await set(tournamentRef(tournamentId, `users/${userId}`), {
         username: username.toLowerCase(),
         display_name: displayName,
         pin_hash: pinHash,
@@ -50,11 +52,22 @@ export default function AdminUsers() {
 
   const handleDelete = async (userId) => {
     if (!confirm(t('admin.confirm'))) return;
-    await remove(prodeRef(`users/${userId}`));
+    await remove(tournamentRef(tournamentId, `users/${userId}`));
   };
 
   return (
     <div className="admin-users">
+      {allTournaments && (
+        <div className="admin-tournament-selector" style={{ marginBottom: 16 }}>
+          <label style={{ marginRight: 8 }}>{t('admin.tournament') || 'Tournament'}:</label>
+          <select value={tournamentId || ''} onChange={(e) => setTournamentId(e.target.value)}>
+            <option value="" disabled>{t('admin.selectTournament') || 'Select tournament'}</option>
+            {Object.entries(allTournaments).map(([id, meta]) => (
+              <option key={id} value={id}>{meta.name || id}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <h3>{t('admin.addUser')}</h3>
       <form onSubmit={handleAdd} className="admin-form">
         <div className="admin-form-row">

@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { update, set } from 'firebase/database';
 import { useAuth } from '../hooks/useAuth';
 import { useFirebaseValue } from '../hooks/useFirebase';
+import { useTournamentValue } from '../hooks/useTournamentValue';
 import { useI18n } from '../i18n/useI18n';
-import { prodeRef } from '../config/firebase';
+import { tournamentRef } from '../config/firebase';
+import { useTournament } from '../context/TournamentContext';
 import { formatDateART, formatTimeART } from '../utils/matchHelpers';
 import { GOLEADOR_CANDIDATES } from '../data/goleadorCandidates';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -14,11 +16,12 @@ import Modal from '../components/ui/Modal';
 export default function InitialPredictions() {
   const { user } = useAuth();
   const { t } = useI18n();
+  const { tournamentId } = useTournament();
   const navigate = useNavigate();
   const { value: matches, loading: mLoad } = useFirebaseValue('matches');
   const { value: teams, loading: tLoad } = useFirebaseValue('teams');
-  const { value: existingPreds, loading: pLoad } = useFirebaseValue(`predictions/${user?.userId}`);
-  const { value: existingSpecial, loading: sLoad } = useFirebaseValue(`special_predictions/${user?.userId}`);
+  const { value: existingPreds, loading: pLoad } = useTournamentValue(`predictions/${user?.userId}`);
+  const { value: existingSpecial, loading: sLoad } = useTournamentValue(`special_predictions/${user?.userId}`);
 
   const [preds, setPreds] = useState({});
   const [champion, setChampion] = useState('');
@@ -75,7 +78,7 @@ export default function InitialPredictions() {
     if (predTimers.current[matchId]) clearTimeout(predTimers.current[matchId]);
     predTimers.current[matchId] = setTimeout(() => {
       const now = Date.now();
-      update(prodeRef(`predictions/${user.userId}/${matchId}`), {
+      update(tournamentRef(tournamentId, `predictions/${user.userId}/${matchId}`), {
         home_score: updatedPred.home_score,
         away_score: updatedPred.away_score,
         submitted_at: existingPreds?.[matchId]?.submitted_at || now,
@@ -99,7 +102,7 @@ export default function InitialPredictions() {
     if (specialTimer.current) clearTimeout(specialTimer.current);
     specialTimer.current = setTimeout(() => {
       const now = Date.now();
-      update(prodeRef(`special_predictions/${user.userId}`), {
+      update(tournamentRef(tournamentId, `special_predictions/${user.userId}`), {
         champion: newChampion || null,
         goleador: newGoleador || null,
         submitted_at: existingSpecial?.submitted_at || now,
@@ -133,7 +136,7 @@ export default function InitialPredictions() {
     setError('');
     try {
       // Predictions are already auto-saved — just mark user as complete
-      await update(prodeRef(`users/${user.userId}`), {
+      await update(tournamentRef(tournamentId, `users/${user.userId}`), {
         has_completed_initial_predictions: true,
         completed_initial_predictions_at: Date.now(),
       });

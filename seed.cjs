@@ -30,7 +30,23 @@ async function seed() {
 
   if (!res.ok) throw new Error(`Config seed failed: ${res.status}`);
   console.log('Config seeded!');
-  console.log('Admin password hash:', adminHash);
+
+  // Create default tournament
+  console.log('Creating default tournament...');
+  const tournament = {
+    name: "Prode Mundial 2026",
+    created_at: Date.now(),
+  };
+  const tRes = await fetch(`${FIREBASE_URL}/prode/tournaments/default.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tournament),
+  });
+  if (!tRes.ok) throw new Error(`Tournament seed failed: ${tRes.status}`);
+  console.log('Default tournament created!');
+
+  console.log('\nAdmin password: admin123');
+  console.log('Tournament ID: default');
 }
 
 seed().catch(console.error);

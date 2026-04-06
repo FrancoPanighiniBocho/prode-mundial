@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useFirebaseValue } from '../hooks/useFirebase';
+import { useTournamentValue } from '../hooks/useTournamentValue';
 import { useAuth } from '../hooks/useAuth';
 import { useI18n } from '../i18n/useI18n';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -8,13 +9,13 @@ import { computePhasePoints } from '../utils/scoring';
 import { isTeamEliminated } from '../utils/matchHelpers';
 
 export default function Leaderboard() {
-  const { value: leaderboard, loading: lLoad } = useFirebaseValue('leaderboard');
-  const { value: users, loading: uLoad } = useFirebaseValue('users');
+  const { value: leaderboard, loading: lLoad } = useTournamentValue('leaderboard');
+  const { value: users, loading: uLoad } = useTournamentValue('users');
   const { value: matches, loading: mLoad } = useFirebaseValue('matches');
-  const { value: predictions, loading: pLoad } = useFirebaseValue('predictions');
-  const { value: snapshots, loading: sLoad } = useFirebaseValue('leaderboard_snapshots');
+  const { value: predictions, loading: pLoad } = useTournamentValue('predictions');
+  const { value: snapshots, loading: sLoad } = useTournamentValue('leaderboard_snapshots');
   const { value: config, loading: cLoad } = useFirebaseValue('config');
-  const { value: specialPredictions, loading: spLoad } = useFirebaseValue('special_predictions');
+  const { value: specialPredictions, loading: spLoad } = useTournamentValue('special_predictions');
   const { user } = useAuth();
   const { t } = useI18n();
 

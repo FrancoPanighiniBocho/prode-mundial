@@ -17,3 +17,7 @@ export const db = getDatabase(app);
 export function prodeRef(path) {
   return ref(db, `/prode/${path}`);
 }
+
+export function tournamentRef(tournamentId, path) {
+  return ref(db, `/prode/t/${tournamentId}/${path}`);
+}

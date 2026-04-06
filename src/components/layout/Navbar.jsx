@@ -2,14 +2,28 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useI18n } from '../../i18n/useI18n';
+import { useTournament } from '../../context/TournamentContext';
 
 export default function Navbar({ onLoginClick, onAdminClick }) {
   const { role, user, isAdmin, logout } = useAuth();
+  const { tournamentId, tournamentName, setTournamentId, clearTournament, allTournaments } = useTournament();
   const { t } = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);
+
+  const handleLogout = () => {
+    logout();
+    clearTournament();
+  };
+
+  // Build list of tournaments this user belongs to (for the dropdown)
+  // We can't easily check without reading each tournament's users,
+  // so we show allTournaments for logged-in users and let them switch
+  const tournamentOptions = allTournaments
+    ? Object.entries(allTournaments).map(([id, meta]) => ({ id, name: meta.name || id }))
+    : [];
 
   const publicLinks = [
     { to: '/', label: t('nav.home') },
@@ -57,11 +71,26 @@ export default function Navbar({ onLoginClick, onAdminClick }) {
             </>
           ) : (
             <div className="navbar-user">
+              {/* Tournament dropdown */}
+              {tournamentOptions.length > 1 && (
+                <select
+                  className="tournament-dropdown"
+                  value={tournamentId || ''}
+                  onChange={(e) => setTournamentId(e.target.value)}
+                >
+                  {tournamentOptions.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              )}
+              {tournamentOptions.length === 1 && tournamentName && (
+                <span className="tournament-label">{tournamentName}</span>
+              )}
               <span className="navbar-username">
                 {user?.display_name || user?.username || 'Admin'}
                 {isAdmin && <span className="admin-badge">ADMIN</span>}
               </span>
-              <button className="btn btn-small btn-secondary" onClick={logout}>{t('nav.logout')}</button>
+              <button className="btn btn-small btn-secondary" onClick={handleLogout}>{t('nav.logout')}</button>
             </div>
           )}
         </div>

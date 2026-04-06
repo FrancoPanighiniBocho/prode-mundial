@@ -1,29 +1,67 @@
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useI18n } from '../../i18n/useI18n';
+import { useTournament } from '../../context/TournamentContext';
 import Modal from '../ui/Modal';
 
 export default function LoginModal({ onClose }) {
   const { loginAsParticipant } = useAuth();
+  const { setTournamentId } = useTournament();
   const { t } = useI18n();
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tournamentPicker, setTournamentPicker] = useState(null); // null or array of matching tournaments
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await loginAsParticipant(username, pin);
-      onClose();
+      const { matchingTournaments } = await loginAsParticipant(username, pin);
+
+      if (matchingTournaments.length === 1) {
+        // Auto-select the only tournament
+        setTournamentId(matchingTournaments[0].tournamentId);
+        onClose();
+      } else {
+        // Show tournament picker
+        setTournamentPicker(matchingTournaments);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSelectTournament = (tournamentId) => {
+    setTournamentId(tournamentId);
+    onClose();
+  };
+
+  // Tournament picker view
+  if (tournamentPicker) {
+    return (
+      <Modal onClose={onClose} title={t('auth.selectTournament') || 'Select Tournament'}>
+        <div className="tournament-picker">
+          <p style={{ color: 'var(--text-secondary)', marginBottom: 16 }}>
+            {t('auth.multipleTournaments') || 'You belong to multiple tournaments. Select one:'}
+          </p>
+          {tournamentPicker.map((tm) => (
+            <button
+              key={tm.tournamentId}
+              className="tournament-picker-item"
+              onClick={() => handleSelectTournament(tm.tournamentId)}
+            >
+              {tm.tournamentName}
+            </button>
+          ))}
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal onClose={onClose} title={t('auth.loginTitle')}>

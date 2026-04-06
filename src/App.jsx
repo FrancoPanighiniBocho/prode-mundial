@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { TournamentProvider } from './context/TournamentContext';
 import { I18nProvider } from './i18n/I18nContext';
 import AppShell from './components/layout/AppShell';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -19,10 +20,13 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminResults from './pages/admin/AdminResults';
 import AdminKnockout from './pages/admin/AdminKnockout';
 import AdminSeedData from './pages/admin/AdminSeedData';
+import AdminMissingPredictions from './pages/admin/AdminMissingPredictions';
+import AdminTournaments from './pages/admin/AdminTournaments';
 
 export default function App() {
   return (
     <I18nProvider>
+      <TournamentProvider>
       <AuthProvider>
         <HashRouter>
           <Routes>
@@ -58,6 +62,8 @@ export default function App() {
                 <Route path="results" element={<AdminResults />} />
                 <Route path="knockout" element={<AdminKnockout />} />
                 <Route path="seed" element={<AdminSeedData />} />
+                <Route path="missing" element={<AdminMissingPredictions />} />
+                <Route path="tournaments" element={<AdminTournaments />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
@@ -65,6 +71,7 @@ export default function App() {
           </Routes>
         </HashRouter>
       </AuthProvider>
+      </TournamentProvider>
     </I18nProvider>
   );
 }

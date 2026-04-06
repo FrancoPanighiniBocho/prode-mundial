@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFirebaseValue } from '../hooks/useFirebase';
+import { useTournamentValue } from '../hooks/useTournamentValue';
 import { useAuth } from '../hooks/useAuth';
 import { useI18n } from '../i18n/useI18n';
 import { canSeeOtherPredictions, formatDateTimeART } from '../utils/matchHelpers';
@@ -12,8 +13,8 @@ export default function MatchDetail() {
   const { matchId } = useParams();
   const { value: matches, loading: mLoad } = useFirebaseValue('matches');
   const { value: teams, loading: tLoad } = useFirebaseValue('teams');
-  const { value: allPredictions, loading: pLoad } = useFirebaseValue('predictions');
-  const { value: users, loading: uLoad } = useFirebaseValue('users');
+  const { value: allPredictions, loading: pLoad } = useTournamentValue('predictions');
+  const { value: users, loading: uLoad } = useTournamentValue('users');
   const { user } = useAuth();
   const { t } = useI18n();
   const [showFunFacts, setShowFunFacts] = useState(false);

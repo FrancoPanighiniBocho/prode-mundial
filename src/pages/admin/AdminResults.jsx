@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { update, set, get } from 'firebase/database';
 import { useFirebaseValue } from '../../hooks/useFirebase';
 import { useI18n } from '../../i18n/useI18n';
-import { prodeRef } from '../../config/firebase';
+import { prodeRef, tournamentRef } from '../../config/firebase';
 import { calculateLeaderboard } from '../../utils/leaderboardCalculator';
 import { computeGroupStandings } from '../../utils/groupStandings';
 import { formatDateART, formatTimeART } from '../../utils/matchHelpers';
@@ -79,14 +79,8 @@ export default function AdminResults() {
       });
 
       try {
-        // Re-fetch fresh data before recalculating
-        const [freshPredictionsSnap, freshSpecialSnap, freshConfigSnap] = await Promise.all([
-          get(prodeRef('predictions')),
-          get(prodeRef('special_predictions')),
-          get(prodeRef('config')),
-        ]);
-        const freshPredictions = freshPredictionsSnap.val();
-        const freshSpecial = freshSpecialSnap.val();
+        // Re-fetch fresh config
+        const freshConfigSnap = await get(prodeRef('config'));
         const freshConfig = freshConfigSnap.val();
 
         // Recalculate group standings if group match
@@ -98,23 +92,39 @@ export default function AdminResults() {
           await update(prodeRef('group_standings_meta'), { last_updated: now });
         }
 
-        // Recalculate leaderboard
-        const leaderboard = calculateLeaderboard(freshPredictions, updatedMatches, users, freshSpecial, freshConfig);
-        await set(prodeRef('leaderboard'), leaderboard);
-        await update(prodeRef('leaderboard_meta'), { last_updated: now });
+        // Fetch all tournament IDs
+        const tournamentsSnap = await get(prodeRef('tournaments'));
+        const tournamentIds = tournamentsSnap.val() ? Object.keys(tournamentsSnap.val()) : [];
 
-        // Store leaderboard snapshot for trend arrows
-        const snapshotData = {};
-        const sorted = Object.entries(leaderboard)
-          .sort(([, a], [, b]) => (b.total_points - a.total_points) || (b.plenos - a.plenos));
-        sorted.forEach(([userId, data], idx) => {
-          snapshotData[userId] = { total_points: data.total_points, rank: idx + 1 };
-        });
-        await set(prodeRef(`leaderboard_snapshots/${now}`), { timestamp: now, data: snapshotData });
+        // Recalculate leaderboard, snapshot, and badges for every tournament
+        await Promise.all(tournamentIds.map(async (tId) => {
+          const [predSnap, specialSnap, usersSnap] = await Promise.all([
+            get(tournamentRef(tId, 'predictions')),
+            get(tournamentRef(tId, 'special_predictions')),
+            get(tournamentRef(tId, 'users')),
+          ]);
+          const tPredictions = predSnap.val();
+          const tSpecial = specialSnap.val();
+          const tUsers = usersSnap.val();
+          if (!tUsers) return;
 
-        // Compute and store achievement badges
-        const badges = computeBadges(freshPredictions, updatedMatches, users);
-        await set(prodeRef('badges'), badges);
+          const leaderboard = calculateLeaderboard(tPredictions, updatedMatches, tUsers, tSpecial, freshConfig);
+          await set(tournamentRef(tId, 'leaderboard'), leaderboard);
+          await update(tournamentRef(tId, 'leaderboard_meta'), { last_updated: now });
+
+          // Store leaderboard snapshot for trend arrows
+          const snapshotData = {};
+          const sorted = Object.entries(leaderboard)
+            .sort(([, a], [, b]) => (b.total_points - a.total_points) || (b.plenos - a.plenos));
+          sorted.forEach(([userId, data], idx) => {
+            snapshotData[userId] = { total_points: data.total_points, rank: idx + 1 };
+          });
+          await set(tournamentRef(tId, `leaderboard_snapshots/${now}`), { timestamp: now, data: snapshotData });
+
+          // Compute and store achievement badges
+          const badges = computeBadges(tPredictions, updatedMatches, tUsers);
+          await set(tournamentRef(tId, 'badges'), badges);
+        }));
 
         // Auto-populate knockout brackets if a round is complete
         await autoPopulateIfRoundComplete(updatedMatches, teams);

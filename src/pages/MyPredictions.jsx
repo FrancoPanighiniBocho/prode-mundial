@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { update } from 'firebase/database';
 import { useAuth } from '../hooks/useAuth';
 import { useFirebaseValue } from '../hooks/useFirebase';
+import { useTournamentValue } from '../hooks/useTournamentValue';
 import { useI18n } from '../i18n/useI18n';
-import { prodeRef } from '../config/firebase';
+import { tournamentRef } from '../config/firebase';
+import { useTournament } from '../context/TournamentContext';
 import { canEditPrediction, formatDateART, formatTimeART, isTeamEliminated } from '../utils/matchHelpers';
 import { computeMatchPoints } from '../utils/scoring';
 import CountdownTimer from '../components/match/CountdownTimer';
@@ -24,12 +26,13 @@ const STAGES = [
 export default function MyPredictions() {
   const { user } = useAuth();
   const { t } = useI18n();
+  const { tournamentId } = useTournament();
   const navigate = useNavigate();
   const { value: config, loading: cLoad } = useFirebaseValue('config');
   const { value: matches, loading: mLoad } = useFirebaseValue('matches');
   const { value: teams, loading: tLoad } = useFirebaseValue('teams');
-  const { value: myPredictions, loading: pLoad } = useFirebaseValue(`predictions/${user?.userId}`);
-  const { value: mySpecial, loading: sLoad } = useFirebaseValue(`special_predictions/${user?.userId}`);
+  const { value: myPredictions, loading: pLoad } = useTournamentValue(`predictions/${user?.userId}`);
+  const { value: mySpecial, loading: sLoad } = useTournamentValue(`special_predictions/${user?.userId}`);
   const [activeTab, setActiveTab] = useState('group');
   const [localPreds, setLocalPreds] = useState({});
   const [saving, setSaving] = useState(false);
@@ -78,7 +81,7 @@ export default function MyPredictions() {
     setSaving(true);
     try {
       const now = Date.now();
-      await update(prodeRef(`predictions/${user.userId}/${matchId}`), {
+      await update(tournamentRef(tournamentId, `predictions/${user.userId}/${matchId}`), {
         home_score: pred.home_score,
         away_score: pred.away_score,
         updated_at: now,
@@ -122,6 +125,17 @@ export default function MyPredictions() {
           )}
         </div>
       )}
+
+      {(() => {
+        const unpredictedInPhase = stageMatches.filter(
+          ([matchId, match]) => canEditPrediction(match, knockoutPhasesOpen) && !myPredictions?.[matchId]
+        ).length;
+        return unpredictedInPhase > 0 ? (
+          <div className="missing-predictions-banner">
+            <span>{t('predictions.missingBanner', { count: unpredictedInPhase })}</span>
+          </div>
+        ) : null;
+      })()}
 
       <TabBar tabs={tabs} active={activeTab} onChange={setActiveTab} />
 

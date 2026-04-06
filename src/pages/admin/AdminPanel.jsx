@@ -9,6 +9,8 @@ export default function AdminPanel() {
     { to: '/admin/users', label: t('admin.users') },
     { to: '/admin/knockout', label: t('admin.knockout') },
     { to: '/admin/seed', label: t('admin.seed') },
+    { to: '/admin/missing', label: t('admin.missing') },
+    { to: '/admin/tournaments', label: t('admin.tournaments') },
   ];
 
   return (

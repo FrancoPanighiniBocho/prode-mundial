@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useFirebaseValue } from '../hooks/useFirebase';
+import { useTournamentValue } from '../hooks/useTournamentValue';
 import { useAuth } from '../hooks/useAuth';
 import { useI18n } from '../i18n/useI18n';
 import { formatDateTimeART, getMatchesByStatus, canEditPrediction } from '../utils/matchHelpers';
@@ -24,10 +25,10 @@ export default function Home() {
   const { value: config, loading: cLoad } = useFirebaseValue('config');
   const { value: matches, loading: mLoad } = useFirebaseValue('matches');
   const { value: teams, loading: tLoad } = useFirebaseValue('teams');
-  const { value: leaderboard, loading: lLoad } = useFirebaseValue('leaderboard');
-  const { value: users, loading: uLoad } = useFirebaseValue('users');
+  const { value: leaderboard, loading: lLoad } = useTournamentValue('leaderboard');
+  const { value: users, loading: uLoad } = useTournamentValue('users');
   const { user, role } = useAuth();
-  const { value: myPredictions } = useFirebaseValue(`predictions/${user?.userId}`);
+  const { value: myPredictions } = useTournamentValue(`predictions/${user?.userId}`);
   const { t } = useI18n();
   const countdown = useCountdown(TOURNAMENT_START);
 

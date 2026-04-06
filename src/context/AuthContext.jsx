@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
-import { get, onValue } from 'firebase/database';
-import { prodeRef } from '../config/firebase';
+import { get } from 'firebase/database';
+import { prodeRef, tournamentRef } from '../config/firebase';
 import { sha256 } from '../utils/hash';
 
 export const AuthContext = createContext(null);
@@ -21,39 +21,61 @@ function saveSession(state) {
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(loadSession);
-  const [users, setUsers] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onValue(prodeRef('users'), (snap) => {
-      setUsers(snap.val());
-    });
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     saveSession(auth);
   }, [auth]);
 
+  /**
+   * Login as participant: scan ALL tournaments for matching credentials.
+   * Returns { auth, matchingTournaments: [{ tournamentId, tournamentName, userId, user }] }
+   */
   const loginAsParticipant = useCallback(async (username, pin) => {
-    if (!users) throw new Error('Users data not loaded yet');
-
     const pinHash = await sha256(pin);
-    const entries = Object.entries(users);
-    const match = entries.find(
-      ([, u]) => u.username?.toLowerCase() === username.toLowerCase() && u.pin_hash === pinHash
-    );
 
-    if (!match) throw new Error('Invalid username or PIN');
+    // Fetch all tournament IDs
+    const tournamentsSnap = await get(prodeRef('tournaments'));
+    const tournaments = tournamentsSnap.val();
+    if (!tournaments) throw new Error('No tournaments found');
 
-    const [userId, user] = match;
+    const matchingTournaments = [];
+
+    // Scan each tournament's users
+    for (const [tId, tMeta] of Object.entries(tournaments)) {
+      const usersSnap = await get(tournamentRef(tId, 'users'));
+      const users = usersSnap.val();
+      if (!users) continue;
+
+      const match = Object.entries(users).find(
+        ([, u]) => u.username?.toLowerCase() === username.toLowerCase() && u.pin_hash === pinHash
+      );
+
+      if (match) {
+        const [userId, user] = match;
+        matchingTournaments.push({
+          tournamentId: tId,
+          tournamentName: tMeta.name || tId,
+          userId,
+          user: { userId, ...user },
+        });
+      }
+    }
+
+    if (matchingTournaments.length === 0) {
+      throw new Error('Invalid username or PIN');
+    }
+
+    // Set auth with the first match (caller will handle tournament selection if multiple)
+    const first = matchingTournaments[0];
     const newAuth = {
       role: 'participant',
-      user: { userId, ...user },
-      isAdmin: user.is_admin || false,
+      user: first.user,
+      isAdmin: first.user.is_admin || false,
     };
     setAuth(newAuth);
-    return newAuth;
-  }, [users]);
+
+    return { auth: newAuth, matchingTournaments };
+  }, []);
 
   const loginAsAdmin = useCallback(async (password) => {
     const passwordHash = await sha256(password);
@@ -77,7 +99,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...auth, users, loginAsParticipant, loginAsAdmin, logout }}>
+    <AuthContext.Provider value={{ ...auth, loginAsParticipant, loginAsAdmin, logout }}>
       {children}
     </AuthContext.Provider>
   );

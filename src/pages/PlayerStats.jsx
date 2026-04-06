@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useFirebaseValue } from '../hooks/useFirebase';
+import { useTournamentValue } from '../hooks/useTournamentValue';
 import { useI18n } from '../i18n/useI18n';
 import { computeMatchPoints } from '../utils/scoring';
 import { BADGE_DEFS } from '../utils/badges';
@@ -28,14 +29,14 @@ export default function PlayerStats() {
   const { userId } = useParams();
   const { t, locale } = useI18n();
 
-  const { value: users, loading: uLoad } = useFirebaseValue('users');
-  const { value: leaderboard, loading: lLoad } = useFirebaseValue('leaderboard');
+  const { value: users, loading: uLoad } = useTournamentValue('users');
+  const { value: leaderboard, loading: lLoad } = useTournamentValue('leaderboard');
   const { value: matches, loading: mLoad } = useFirebaseValue('matches');
   const { value: teams, loading: tLoad } = useFirebaseValue('teams');
-  const { value: predictions, loading: pLoad } = useFirebaseValue(`predictions/${userId}`);
-  const { value: specialPredictions, loading: spLoad } = useFirebaseValue(`special_predictions/${userId}`);
+  const { value: predictions, loading: pLoad } = useTournamentValue(`predictions/${userId}`);
+  const { value: specialPredictions, loading: spLoad } = useTournamentValue(`special_predictions/${userId}`);
   const { value: config, loading: cLoad } = useFirebaseValue('config');
-  const { value: badges, loading: bLoad } = useFirebaseValue('badges');
+  const { value: badges, loading: bLoad } = useTournamentValue('badges');
 
   if (uLoad || lLoad || mLoad || tLoad || pLoad || spLoad || cLoad || bLoad) return <LoadingSpinner />;
 

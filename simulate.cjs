@@ -290,6 +290,10 @@ async function simulate() {
   await fbPut('/config', config);
   console.log('  Config seeded.');
 
+  // Create default tournament
+  await fbPut('/tournaments/default', { name: 'Prode Mundial 2026', created_at: Date.now() });
+  console.log('  Default tournament created.');
+
   // Teams (keyed by code)
   const teamsObj = {};
   for (const t of TEAMS) {
@@ -335,7 +339,7 @@ async function simulate() {
       created_at: Date.now(),
     };
   }
-  await fbPut('/users', usersObj);
+  await fbPut('/t/default/users', usersObj);
   console.log('  Users created: ' + TEST_USERS.map(u => u.id).join(', '));
 
   // -----------------------------------------------------------------------
@@ -352,14 +356,14 @@ async function simulate() {
         away_score: rand(0, 3),
       };
     }
-    await fbPut(`/predictions/${u.id}`, preds);
+    await fbPut(`/t/default/predictions/${u.id}`, preds);
 
     // Special predictions
     const special = {
       champion: pick(teamCodes),
       goleador: pick(GOLEADOR_CANDIDATES),
     };
-    await fbPut(`/special_predictions/${u.id}`, special);
+    await fbPut(`/t/default/special_predictions/${u.id}`, special);
 
     console.log(`  ${u.id}: 72 match predictions + champion=${special.champion}, goleador=${special.goleador}`);
   }
@@ -397,10 +401,10 @@ async function simulate() {
     }
   }
 
-  const allUsers = await fbGet('/users');
+  const allUsers = await fbGet('/t/default/users');
   const userCount = Object.keys(allUsers).length;
 
-  const allPredictions = await fbGet('/predictions');
+  const allPredictions = await fbGet('/t/default/predictions');
   const predUserCount = Object.keys(allPredictions).length;
 
   console.log('\n=== VERIFICATION SUMMARY ===');
