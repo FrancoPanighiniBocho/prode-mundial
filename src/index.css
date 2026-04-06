@@ -1095,7 +1095,8 @@ img { max-width: 100%; display: block; }
    Team Detail
    ========================================== */
 .page-team-detail { }
-.team-detail-header { text-align: center; padding: 24px 0; }
+.team-detail-header { display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+.team-detail-header .team-flag-img { margin-right: 0; }
 .team-detail-group { font-family: var(--font-heading); font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--celeste); margin-top: 8px; }
 .team-detail-name { font-family: var(--font-heading); font-size: 28px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; }
 
