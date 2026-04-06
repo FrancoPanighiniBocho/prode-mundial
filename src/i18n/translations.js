@@ -52,6 +52,10 @@ export const translations = {
       incompleteMsg: 'You must fill out ALL predictions before entering the tournament. Complete the missing items below:',
       missing: 'missing',
       missingBanner: 'You have {count} unpredicted matches in this phase',
+      projected: 'Next Round',
+      projectedNote: 'Based on your current predictions',
+      projectedWarning: '{count} group matches unpredicted — using 0-0 for those',
+      projectedDrawNote: 'Draws: home team projected to advance',
     },
     leaderboard: {
       title: 'Leaderboard',
@@ -197,6 +201,10 @@ export const translations = {
       incompleteMsg: 'Tenés que completar TODOS los pronósticos antes de entrar al torneo. Completá lo que falta:',
       missing: 'falta',
       missingBanner: 'Tenés {count} partidos sin pronóstico en esta fase',
+      projected: 'Próxima Ronda',
+      projectedNote: 'Según tus pronósticos actuales',
+      projectedWarning: '{count} partidos de grupo sin pronóstico — usando 0-0 para esos',
+      projectedDrawNote: 'Empates: el local avanza en la proyección',
     },
     leaderboard: {
       title: 'Tabla de Posiciones',

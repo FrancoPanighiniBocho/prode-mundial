@@ -1062,6 +1062,21 @@ img { max-width: 100%; display: block; }
   text-align: center;
 }
 
+/* Projected Next Round */
+.projected-section { margin-top: 8px; }
+.projected-note { font-size: 13px; color: var(--text-secondary); font-style: italic; margin-bottom: 12px; text-align: center; }
+.projected-warning { font-size: 12px; color: var(--sol); margin-bottom: 12px; text-align: center; }
+.projected-matchups { display: flex; flex-direction: column; gap: 6px; }
+.projected-matchup {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--bg-secondary);
+  border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius);
+}
+.projected-team { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; font-size: 14px; }
+.projected-team.away { justify-content: flex-end; text-align: right; }
+.projected-vs { font-family: var(--font-heading); font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin: 0 8px; flex-shrink: 0; }
+.projected-matchup .tbd { color: var(--text-muted); font-style: italic; }
+
 /* Admin Missing Predictions Table */
 .admin-missing-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .admin-missing-table th {

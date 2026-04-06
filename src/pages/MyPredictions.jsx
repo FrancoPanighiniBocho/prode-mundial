@@ -9,6 +9,7 @@ import { tournamentRef } from '../config/firebase';
 import { useTournament } from '../context/TournamentContext';
 import { canEditPrediction, formatDateART, formatTimeART, isTeamEliminated } from '../utils/matchHelpers';
 import { computeMatchPoints } from '../utils/scoring';
+import { computeProjectedR32, computeProjectedNextRound, getProjectedPhaseLabel } from '../utils/projectedBracket';
 import CountdownTimer from '../components/match/CountdownTimer';
 import TabBar from '../components/ui/TabBar';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -21,6 +22,7 @@ const STAGES = [
   { key: 'qf', label: 'phases.qf' },
   { key: 'sf', label: 'phases.sf' },
   { key: 'finals', label: 'phases.finals' },
+  { key: 'projected', label: 'predictions.projected' },
 ];
 
 export default function MyPredictions() {
@@ -55,7 +57,7 @@ export default function MyPredictions() {
   const tabs = STAGES.map((s) => ({ key: s.key, label: t(s.label) }));
 
   // Filter matches for active tab
-  const stageMatches = matches
+  const stageMatches = activeTab !== 'projected' && matches
     ? Object.entries(matches)
         .filter(([, m]) => {
           if (activeTab === 'finals') return m.stage === 'third_place' || m.stage === 'final';
@@ -63,6 +65,15 @@ export default function MyPredictions() {
         })
         .sort(([, a], [, b]) => (a.datetime || 0) - (b.datetime || 0))
     : [];
+
+  // Projected next round data
+  const projectedPhase = getProjectedPhaseLabel(config?.tournament_phase);
+  const PREV_STAGE_MAP = { r16: 'r32', qf: 'r16', sf: 'qf', finals: 'sf' };
+  const projectedData = activeTab === 'projected' && projectedPhase
+    ? projectedPhase === 'r32'
+      ? computeProjectedR32({ ...myPredictions, ...localPreds }, matches, teams)
+      : computeProjectedNextRound({ ...myPredictions, ...localPreds }, matches, PREV_STAGE_MAP[projectedPhase])
+    : null;
 
   const handleScoreChange = (matchId, field, value) => {
     const num = value === '' ? '' : Math.max(0, parseInt(value) || 0);
@@ -138,6 +149,35 @@ export default function MyPredictions() {
       })()}
 
       <TabBar tabs={tabs} active={activeTab} onChange={setActiveTab} />
+
+      {activeTab === 'projected' ? (
+        <div className="projected-section">
+          {!projectedPhase ? (
+            <p className="empty-state">{t('phases.finished')}</p>
+          ) : projectedData ? (
+            <>
+              <p className="projected-note">{t('predictions.projectedNote')}</p>
+              {projectedData.unpredictedCount > 0 && (
+                <p className="projected-warning">{t('predictions.projectedWarning', { count: projectedData.unpredictedCount })}</p>
+              )}
+              <p className="projected-note">{t('predictions.projectedDrawNote')}</p>
+              <div className="projected-matchups">
+                {projectedData.matchups.map((m) => (
+                  <div key={m.matchId} className="projected-matchup">
+                    <div className="projected-team home">
+                      {m.home ? <><TeamFlag iso={teams?.[m.home]?.iso} /> <span>{teams?.[m.home]?.name || m.home}</span></> : <span className="tbd">TBD</span>}
+                    </div>
+                    <span className="projected-vs">vs</span>
+                    <div className="projected-team away">
+                      {m.away ? <><TeamFlag iso={teams?.[m.away]?.iso} /> <span>{teams?.[m.away]?.name || m.away}</span></> : <span className="tbd">TBD</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
+        </div>
+      ) : (
 
       <div className="predictions-match-list">
         {stageMatches.length === 0 ? (
@@ -251,6 +291,8 @@ export default function MyPredictions() {
           })()
         )}
       </div>
+
+      )}
     </div>
   );
 }
